@@ -6,6 +6,7 @@ import org.radar.radarlint.settings.ExcludedFilePatterns;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
+import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -27,7 +29,10 @@ import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectUtils;
 import org.netbeans.modules.parsing.api.Source;
+import org.openide.ErrorManager;
+import org.openide.awt.NotificationDisplayer;
 import org.openide.filesystems.FileObject;
+import org.openide.util.ImageUtilities;
 import org.radar.radarlint.ui.SonarLintPropertiesComponent;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
 import org.sonarsource.sonarlint.core.client.api.common.ProgressMonitor;
@@ -39,6 +44,7 @@ import org.sonarsource.sonarlint.core.client.api.connected.Language;
 import org.sonarsource.sonarlint.core.client.api.connected.ServerConfiguration;
 import org.radar.radarlint.settings.SettingsAccessor;
 import org.radar.radarlint.settings.TokenAccesor;
+import org.sonarsource.sonarlint.core.client.api.exceptions.SonarLintException;
 import org.sonarsource.sonarlint.core.client.api.exceptions.StorageException;
 
 /**
@@ -48,6 +54,7 @@ import org.sonarsource.sonarlint.core.client.api.exceptions.StorageException;
 public class SonarLintScanner implements Supplier<List<Issue>>  {
     private static final Logger LOGGER = Logger.getLogger(SonarLintScanner.class.getName());
     
+	private static final ImageIcon ERROR_ICON = ImageUtilities.loadImageIcon("org/radar/radarlint/images/blocker.png", false);
     private static final String USER_AGENT = "SonarLint Netbeans";
     
     private final Language[] enabledLanguages=Language.values();
@@ -162,12 +169,21 @@ public class SonarLintScanner implements Supplier<List<Issue>>  {
                 });
             }
             return issues;
-        }finally{
+		} catch (SonarLintException ex) {
+			showError(ex);
+			return Collections.emptyList();
+        }finally { 
             SwingUtilities.invokeLater(() -> {
                 handle.finish();
             });
         }
     }
+	
+	private static void showError(Throwable tw) {
+		NotificationDisplayer.getDefault().notify("SonarLint problem", ERROR_ICON, tw.getMessage(), (e) -> {
+			ErrorManager.getDefault().notify(tw);
+		});
+	}
     
     private boolean isSupportedLanguage(FileObject fileObject) {
         boolean isEnabledLanguage=false;
