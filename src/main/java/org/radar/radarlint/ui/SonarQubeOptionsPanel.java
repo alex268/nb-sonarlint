@@ -1,7 +1,7 @@
 package org.radar.radarlint.ui;
 
 import java.util.Arrays;
-import org.netbeans.api.keyring.Keyring;
+import org.radar.radarlint.settings.ServerIDPreference;
 import org.radar.radarlint.settings.ServerUrlPreference;
 import org.radar.radarlint.settings.TokenAccesor;
 
@@ -26,6 +26,8 @@ public final class SonarQubeOptionsPanel extends javax.swing.JPanel {
         serverAddress = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         tokenField = new javax.swing.JPasswordField();
+        jLabel4 = new javax.swing.JLabel();
+        serverID = new javax.swing.JTextField();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SonarQubeOptionsPanel.class, "SonarQubeOptionsPanel.jLabel1.text")); // NOI18N
 
@@ -35,21 +37,30 @@ public final class SonarQubeOptionsPanel extends javax.swing.JPanel {
 
         tokenField.setText(org.openide.util.NbBundle.getMessage(SonarQubeOptionsPanel.class, "SonarQubeOptionsPanel.tokenField.text")); // NOI18N
 
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(SonarQubeOptionsPanel.class, "SonarQubeOptionsPanel.jLabel4.text")); // NOI18N
+
+        serverID.setText(org.openide.util.NbBundle.getMessage(SonarQubeOptionsPanel.class, "SonarQubeOptionsPanel.serverID.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 63, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(serverAddress)
-                    .addComponent(tokenField, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE))
+                    .addComponent(serverID, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
+                    .addComponent(tokenField))
                 .addContainerGap())
         );
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jLabel1, jLabel2, jLabel4});
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -59,14 +70,19 @@ public final class SonarQubeOptionsPanel extends javax.swing.JPanel {
                     .addComponent(serverAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(serverID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(tokenField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(180, Short.MAX_VALUE))
+                .addContainerGap(144, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     protected void load() {
         serverAddress.setText(new ServerUrlPreference().getValue());
+		serverID.setText(new ServerIDPreference().getValue());
         char[] abd = new TokenAccesor().getValue();
         if(abd != null) {
             tokenField.setText(new String(abd));
@@ -78,6 +94,7 @@ public final class SonarQubeOptionsPanel extends javax.swing.JPanel {
 
     protected void store() {
         new ServerUrlPreference().setValue(serverAddress.getText());
+		new ServerIDPreference().setValue(serverID.getText());
         char[] adb = tokenField.getPassword();
         new TokenAccesor().setValue(adb);
     }
@@ -89,7 +106,9 @@ public final class SonarQubeOptionsPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JTextField serverAddress;
+    private javax.swing.JTextField serverID;
     private javax.swing.JPasswordField tokenField;
     // End of variables declaration//GEN-END:variables
 }
