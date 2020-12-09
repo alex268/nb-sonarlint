@@ -29,6 +29,7 @@
                 <attr name="diplayNameKey" stringvalue="scanner.displayName"/>
                 <attr name="descriptionKey" stringvalue="scanner.description"/>
                 <attr name="iconKey" stringvalue="scanner.icon"/>
+                <attr name="position" intvalue="400"/>
             </file>
         </folder>
 <!--        <folder name="Scanners">
