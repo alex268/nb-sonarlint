@@ -129,15 +129,11 @@ public class SonarLintScanner implements Supplier<List<Issue>>  {
                 
                 ServerConfiguration serverConfiguration=serverConfigurationBuilder.build();
                 ConnectedSonarLintEngine engine = SonarLintEngineFactory.getOrCreateEngine(enabledLanguages);
-                if(engine.checkIfGlobalStorageNeedUpdate(serverConfiguration, new ProgressMonitor() {}).needUpdate()) {
-                    LOGGER.log(Level.INFO, "{0} Updating global", new Object[]{(System.currentTimeMillis()-startTime)/1000f});
-                    handle.setDisplayName("SonarLint - Updating global storage");
-                    engine.update(serverConfiguration, new ProgressMonitor() { });
-                }
-                boolean projectStorajeNeedsUpdate=false;
-                try{
+
+				boolean projectStorajeNeedsUpdate = false;
+                try {
                     projectStorajeNeedsUpdate=engine.checkIfProjectStorageNeedUpdate(serverConfiguration, projectKey.get(), new ProgressMonitor() { }).needUpdate();
-                }catch(StorageException ex) {
+                } catch(StorageException ex) {
                     projectStorajeNeedsUpdate=true;
                 }
                 if(projectStorajeNeedsUpdate) {
@@ -145,7 +141,8 @@ public class SonarLintScanner implements Supplier<List<Issue>>  {
                     handle.setDisplayName("SonarLint - Updating project storage");
                     engine.updateProject(serverConfiguration, projectKey.get(), new ProgressMonitor() { });
                 }
-                LOGGER.log(Level.INFO, "{0} Start analisys", new Object[]{(System.currentTimeMillis()-startTime)/1000f});
+                
+				LOGGER.log(Level.INFO, "{0} Start analisys", new Object[]{(System.currentTimeMillis()-startTime)/1000f});
                 handle.setDisplayName("SonarLint - Running analysis");
                 engine.analyze(analysisConfig, (Issue issue) -> {
                     LOGGER.log(Level.INFO, "Issue: {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}", new Object[]{issue.getInputFile().relativePath(), issue.getStartLine(), issue.getStartLineOffset(), issue.getEndLine(), issue.getEndLineOffset(), issue.getSeverity(), issue.getRuleName(), issue.getType(), issue.getMessage()});
