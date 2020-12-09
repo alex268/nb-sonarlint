@@ -2,6 +2,7 @@ package org.radar.radarlint.ui;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
@@ -14,7 +15,9 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle;
 import org.openide.windows.WindowManager;
 import org.radar.radarlint.EditorAnnotator;
+import org.radar.radarlint.IssueAnnotation;
 import org.radar.radarlint.SonarLintEngineFactory;
+import org.sonarsource.sonarlint.core.client.api.common.RuleDetails;
 import org.sonarsource.sonarlint.core.client.api.connected.Language;
 
 /**
@@ -31,7 +34,7 @@ import org.sonarsource.sonarlint.core.client.api.connected.Language;
     popupText = "Show Rule Details",
     popupPosition = 10000
 )
-public class RuleDetailsAction extends BaseAction{
+public class RuleDetailsAction extends BaseAction {
 
     @Override
     public void actionPerformed(ActionEvent ae, JTextComponent component) {
@@ -40,14 +43,14 @@ public class RuleDetailsAction extends BaseAction{
         int lineNumber = root.getElementIndex(caretPosition) + 1;
         Source source = Source.create(component.getDocument());
         FileObject fileObject = source.getFileObject();
-        EditorAnnotator.getInstance().getIssueAnnotation(fileObject, lineNumber)
-            .ifPresentOrElse(issueAnnotation -> {
-                RuleDialog.showRule(WindowManager.getDefault().getMainWindow(), SonarLintEngineFactory.getOrCreateEngine(Language.values()).getRuleDetails(issueAnnotation.getIssue().getRuleKey()));
-            }, () -> {
-                Toolkit.getDefaultToolkit().beep();
-                ResourceBundle bundle = NbBundle.getBundle(RuleDetailsAction.class);
-                DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(bundle.getString("RuleDetailsAction.noIssueAtLocation"), NotifyDescriptor.WARNING_MESSAGE));
-            });
+		Optional<IssueAnnotation> issue = EditorAnnotator.getInstance().getIssueAnnotation(fileObject, lineNumber);
+		if (issue.isPresent()) {
+			RuleDetails rule = SonarLintEngineFactory.getOrCreateEngine(Language.values()).getRuleDetails(issue.get().getIssue().getRuleKey());
+			RuleDialog.showRule(WindowManager.getDefault().getMainWindow(), rule); 
+		} else {
+			Toolkit.getDefaultToolkit().beep();
+			ResourceBundle bundle = NbBundle.getBundle(RuleDetailsAction.class);
+			DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(bundle.getString("RuleDetailsAction.noIssueAtLocation"), NotifyDescriptor.WARNING_MESSAGE));
+		}
     }
-    
 }
